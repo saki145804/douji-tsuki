@@ -2,20 +2,22 @@
 // Supabaseとのデータのやり取りをまとめたファイル
 // app.js から呼び出される関数群
 
+import { supabase } from './supabase-init.js'
+
 // ---------- プロフィール（localStorageで管理） ----------
 
-function loadProfile() {
+export function loadProfile() {
   const raw = localStorage.getItem('douji-tsuki-profile')
   return raw ? JSON.parse(raw) : null
 }
 
-function saveProfile(profile) {
+export function saveProfile(profile) {
   localStorage.setItem('douji-tsuki-profile', JSON.stringify(profile))
 }
 
 // ---------- 投稿（posts） ----------
 
-async function loadPosts() {
+export async function loadPosts() {
   const { data, error } = await supabase
     .from('posts')
     .select('*')
@@ -28,7 +30,7 @@ async function loadPosts() {
   return data || []
 }
 
-async function createPost(week, place, text, author) {
+export async function createPost(week, place, text, author) {
   const { data, error } = await supabase
     .from('posts')
     .insert([{ week, place, text, author, hearts: 0, comments: [] }])
@@ -42,7 +44,7 @@ async function createPost(week, place, text, author) {
   return data
 }
 
-async function toggleHeart(postId, isLiked) {
+export async function toggleHeart(postId, isLiked) {
   const { data: post, error: fetchError } = await supabase
     .from('posts')
     .select('hearts')
@@ -70,7 +72,7 @@ async function toggleHeart(postId, isLiked) {
   return data.hearts
 }
 
-async function addComment(postId, author, text) {
+export async function addComment(postId, author, text) {
   const { data: post, error: fetchError } = await supabase
     .from('posts')
     .select('comments')
@@ -104,7 +106,7 @@ async function addComment(postId, author, text) {
 
 // ---------- Q&A（qa） ----------
 
-async function loadQA() {
+export async function loadQA() {
   const { data, error } = await supabase
     .from('qa')
     .select('*')
@@ -117,7 +119,7 @@ async function loadQA() {
   return data || []
 }
 
-async function createQuestion(place, week, question) {
+export async function createQuestion(place, week, question) {
   const { data, error } = await supabase
     .from('qa')
     .insert([{ place, week, question, answers: [] }])
@@ -131,7 +133,7 @@ async function createQuestion(place, week, question) {
   return data
 }
 
-async function addAnswer(qaId, author, text, place, isSenpai) {
+export async function addAnswer(qaId, author, text, place, isSenpai) {
   const { data: qa, error: fetchError } = await supabase
     .from('qa')
     .select('answers')
@@ -166,14 +168,14 @@ async function addAnswer(qaId, author, text, place, isSenpai) {
 
 // ---------- リアルタイム購読 ----------
 
-function subscribeToPostsRealtime(callback) {
+export function subscribeToPostsRealtime(callback) {
   return supabase
     .channel('posts-realtime')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, callback)
     .subscribe()
 }
 
-function subscribeToQARealtime(callback) {
+export function subscribeToQARealtime(callback) {
   return supabase
     .channel('qa-realtime')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'qa' }, callback)
