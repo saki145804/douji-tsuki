@@ -1,3 +1,4 @@
+import { loadProfile, saveProfile, loadPosts, createPost, toggleHeart, addComment, loadQA, createQuestion, addAnswer, subscribeToPostsRealtime, subscribeToQARealtime } from './db.js'
 // ==================== グローバル変数 ====================
 let currentProfile = null;
 let allPosts = [];
