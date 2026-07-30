@@ -337,4 +337,4 @@ async function handleCreateQuestion(event) {
   }
 
   const newQuestion = await createQuestion(place, week, question)
-  i
+}
